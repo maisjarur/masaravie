@@ -1,0 +1,19 @@
+{
+  "name": "masaravie",
+  "version": "2.0.0",
+  "description": "Masaravie – holistic wellness and conscious living aggregator",
+  "private": true,
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=api",
+    "dev:web": "npm run dev --workspace=web",
+    "build:api": "npm run build --workspace=api",
+    "build:web": "npm run build --workspace=web",
+    "start": "npm run start --workspace=api"
+  },
+  "keywords": ["holistic", "wellness", "conscious-living", "yoga", "meditation"],
+  "license": "MIT"
+}

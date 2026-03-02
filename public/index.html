@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Masaravie – Holistic Wellness & Conscious Living</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=" crossorigin=""></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="header">
+        <div class="brand">
+          <div class="brand-mark">
+            <span class="element earth"></span>
+            <span class="element water"></span>
+            <span class="element fire"></span>
+            <span class="element air"></span>
+            <span class="element ether"></span>
+          </div>
+          <div class="brand-text">
+            <h1>Masaravie</h1>
+            <p>Curated spaces for holistic wellness & conscious living.</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="search-panel">
+          <div class="search-col">
+            <div class="field-group">
+              <label for="location-input">Location</label>
+              <div class="location-row">
+                <div class="location-autocomplete">
+                  <input
+                    id="location-input"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="City, country (e.g. London, UK)"
+                    aria-autocomplete="list"
+                    aria-expanded="false"
+                    aria-controls="location-suggestions"
+                    aria-activedescendant=""
+                  />
+                  <ul
+                    id="location-suggestions"
+                    class="location-suggestions"
+                    role="listbox"
+                    aria-label="Location suggestions"
+                    hidden
+                  ></ul>
+                </div>
+                <button id="use-location-btn" class="secondary-button">
+                  Use my location
+                </button>
+              </div>
+            </div>
+            <div class="toggle-group">
+              <input type="checkbox" id="online-only-toggle" />
+              <label for="online-only-toggle">Online only</label>
+            </div>
+          </div>
+
+          <div class="search-col search-col--chips">
+            <span class="field-label">Focus</span>
+            <div class="chips">
+              <label class="chip">
+                <input type="checkbox" value="yoga" class="service-chip" />
+                <span>Yoga</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="meditation" class="service-chip" />
+                <span>Meditation</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="breathwork" class="service-chip" />
+                <span>Breathwork</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="healing" class="service-chip" />
+                <span>Healing</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="ecstatic dance" class="service-chip" />
+                <span>Ecstatic dance</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="massage" class="service-chip" />
+                <span>Massage</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="sound bath" class="service-chip" />
+                <span>Sound baths</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="mystery school" class="service-chip" />
+                <span>Mystery school</span>
+              </label>
+              <label class="chip">
+                <input type="checkbox" value="self development" class="service-chip" />
+                <span>Self development</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="search-col search-col--action">
+            <button id="search-btn" class="primary-button">Search</button>
+            <span id="search-status" class="status-text"></span>
+          </div>
+        </section>
+
+        <section class="ad-slot" aria-label="Advertisement">
+          <!--
+            Replace .ad-placeholder below with your Google AdSense snippet:
+
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4620098661805166"
+     crossorigin="anonymous"></script>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                 data-ad-slot="XXXXXXXXXX"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+          -->
+          <div class="ad-placeholder"><span>Advertisement</span></div>
+        </section>
+
+        <section class="results-panel">
+          <div class="results-filter-bar">
+            <input type="text" id="filter-name" placeholder="Filter by name…" />
+            <select id="filter-rating">
+              <option value="">All ratings</option>
+              <option value="4">4+ ★</option>
+              <option value="4.5">4.5+ ★</option>
+              <option value="5">5 ★</option>
+            </select>
+            <span id="filter-count" class="filter-count"></span>
+            <div class="view-toggle" role="group" aria-label="Results view">
+              <button id="list-view-btn" class="view-toggle-btn active" aria-pressed="true">List</button>
+              <button id="map-view-btn" class="view-toggle-btn" aria-pressed="false">Map</button>
+            </div>
+          </div>
+          <ul id="providers-list" class="card-list"></ul>
+          <div id="map" class="map-view" hidden></div>
+        </section>
+      </main>
+
+      <section class="contact-section">
+        <h2>Get in touch</h2>
+        <p class="contact-intro">Have a question, or want to list your space? We'd love to hear from you.</p>
+        <form id="contact-form" class="contact-form" novalidate>
+          <div class="contact-row">
+            <div class="contact-field">
+              <label for="contact-name">Name</label>
+              <input type="text" id="contact-name" placeholder="Your name" autocomplete="name" />
+            </div>
+            <div class="contact-field">
+              <label for="contact-email">Email</label>
+              <input type="email" id="contact-email" placeholder="your@email.com" autocomplete="email" />
+            </div>
+          </div>
+          <div class="contact-field">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" rows="4" placeholder="Tell us about your space, or ask us anything…"></textarea>
+          </div>
+          <div class="contact-actions">
+            <button type="submit" class="primary-button" id="contact-submit">Send message</button>
+            <span id="contact-status" class="status-text"></span>
+          </div>
+        </form>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Masaravie curates data from third-party platforms such as Google Maps
+          and Instagram. Always check details directly with providers.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      const locationInput = document.getElementById('location-input');
+      const locationSuggestionsEl =
+        document.getElementById('location-suggestions');
+      const useLocationBtn = document.getElementById('use-location-btn');
+
+      let locationHighlightIndex = -1;
+      let currentLocationSuggestions = [];
+      let locationAutocompleteTimer = null;
+
+      function debugLog(msg, data) {
+        fetch('http://127.0.0.1:7589/ingest/18f9ee8e-1df4-4ad3-867a-ede28b7e1544', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '201c3b' },
+          body: JSON.stringify({ sessionId: '201c3b', location: 'index.html', message: msg, data: data || {}, timestamp: Date.now() }),
+        }).catch(() => {});
+      }
+
+      function showLocationSuggestions(matches) {
+        debugLog('showLocationSuggestions', { matchesLen: matches?.length ?? 0, firstLabel: matches?.[0]?.label?.slice(0, 40) });
+        locationSuggestionsEl.innerHTML = '';
+        locationHighlightIndex = -1;
+        currentLocationSuggestions = matches;
+        if (!matches.length) {
+          locationSuggestionsEl.hidden = true;
+          locationInput.setAttribute('aria-expanded', 'false');
+          locationInput.removeAttribute('aria-activedescendant');
+          return;
+        }
+        matches.forEach((s, i) => {
+          const li = document.createElement('li');
+          li.id = 'location-option-' + i;
+          li.setAttribute('role', 'option');
+          li.textContent = s.label || s;
+          li.classList.add('location-option');
+          li.addEventListener('click', () => selectLocation(s));
+          locationSuggestionsEl.appendChild(li);
+        });
+        locationSuggestionsEl.hidden = false;
+        locationInput.setAttribute('aria-expanded', 'true');
+      }
+
+      function selectLocation(suggestion) {
+        const text = typeof suggestion === 'string' ? suggestion : suggestion.label;
+        locationInput.value = text || '';
+        locationSuggestionsEl.hidden = true;
+        locationInput.setAttribute('aria-expanded', 'false');
+        locationInput.removeAttribute('aria-activedescendant');
+        locationHighlightIndex = -1;
+      }
+
+      function highlightOption(index) {
+        const options = locationSuggestionsEl.querySelectorAll('.location-option');
+        if (!options.length) return;
+        locationHighlightIndex = Math.max(0, Math.min(index, options.length - 1));
+        options.forEach((el, i) => {
+          el.classList.toggle('highlighted', i === locationHighlightIndex);
+        });
+        locationInput.setAttribute(
+          'aria-activedescendant',
+          options[locationHighlightIndex] ? options[locationHighlightIndex].id : ''
+        );
+      }
+
+      async function fetchLocationSuggestions(query) {
+        const q = (query || '').trim();
+        debugLog('fetchLocationSuggestions called', { q, hasQ: Boolean(q) });
+        if (!q) {
+          showLocationSuggestions([]);
+          return;
+        }
+        try {
+          const res = await fetch(
+            '/api/location-autocomplete?q=' + encodeURIComponent(q)
+          );
+          debugLog('fetch returned', { ok: res.ok, status: res.status });
+          if (!res.ok) {
+            showLocationSuggestions([]);
+            return;
+          }
+          const data = await res.json();
+          const list = Array.isArray(data.suggestions)
+            ? data.suggestions.filter((s) => s && s.label)
+            : [];
+          debugLog('parsed suggestions', { listLen: list.length, rawLen: (data.suggestions || []).length });
+          showLocationSuggestions(list);
+        } catch (e) {
+          debugLog('fetch error', { errMsg: e?.message });
+          showLocationSuggestions([]);
+        }
+      }
+
+      locationInput.addEventListener('input', () => {
+        const value = locationInput.value;
+        if (locationAutocompleteTimer) {
+          clearTimeout(locationAutocompleteTimer);
+        }
+        if (value.trim().length < 3) {
+          showLocationSuggestions([]);
+          return;
+        }
+        locationAutocompleteTimer = setTimeout(() => {
+          fetchLocationSuggestions(value);
+        }, 220);
+      });
+
+      locationInput.addEventListener('focus', () => {
+        if (!locationInput.value.trim()) return;
+        fetchLocationSuggestions(locationInput.value);
+      });
+
+      locationInput.addEventListener('keydown', (event) => {
+        if (locationSuggestionsEl.hidden) {
+          if (event.key === 'Enter') performSearch();
+          return;
+        }
+        const options =
+          locationSuggestionsEl.querySelectorAll('.location-option');
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          highlightOption(locationHighlightIndex + 1);
+          return;
+        }
+        if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          highlightOption(locationHighlightIndex - 1);
+          return;
+        }
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          if (options[locationHighlightIndex]) {
+            selectLocation(currentLocationSuggestions[locationHighlightIndex]);
+          } else {
+            performSearch();
+          }
+          return;
+        }
+        if (event.key === 'Escape') {
+          locationSuggestionsEl.hidden = true;
+          locationInput.setAttribute('aria-expanded', 'false');
+          locationHighlightIndex = -1;
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (
+          !locationSuggestionsEl.contains(e.target) &&
+          e.target !== locationInput
+        ) {
+          locationSuggestionsEl.hidden = true;
+          locationInput.setAttribute('aria-expanded', 'false');
+        }
+      });
+      const onlineOnlyToggle = document.getElementById('online-only-toggle');
+      const searchBtn = document.getElementById('search-btn');
+      const searchStatus = document.getElementById('search-status');
+      const serviceChips = Array.from(document.querySelectorAll('.service-chip'));
+      const providersList = document.getElementById('providers-list');
+      const filterName = document.getElementById('filter-name');
+      const filterRating = document.getElementById('filter-rating');
+      const filterCount = document.getElementById('filter-count');
+
+      let _allProviders = [];
+      let _filteredProviders = [];
+      let _currentView = 'list';
+
+      function setStatus(message, isError) {
+        searchStatus.textContent = message || '';
+        searchStatus.classList.toggle('error', Boolean(isError));
+      }
+
+      useLocationBtn.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          setStatus('Geolocation is not available in this browser.', true);
+          return;
+        }
+        setStatus('Detecting your location...');
+        useLocationBtn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            try {
+              const res = await fetch(
+                `/api/location-reverse?lat=${latitude}&lng=${longitude}`
+              );
+              const data = await res.json();
+              locationInput.value =
+                data.label ||
+                `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            } catch {
+              locationInput.value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            }
+            useLocationBtn.disabled = false;
+            performSearch();
+          },
+          () => {
+            useLocationBtn.disabled = false;
+            setStatus(
+              'Unable to access your location. You can type a city instead.',
+              true
+            );
+          },
+          { timeout: 10000 }
+        );
+      });
+
+      async function performSearch() {
+        const location = locationInput.value.trim();
+        const onlineOnly = onlineOnlyToggle.checked;
+        const services = serviceChips
+          .filter((chip) => chip.checked)
+          .map((chip) => chip.value);
+
+        const params = new URLSearchParams();
+        if (location) params.set('location', location);
+        if (onlineOnly) params.set('onlineOnly', 'true');
+        if (services.length) params.set('services', services.join(','));
+
+        setStatus('Gathering spaces and events...');
+        searchBtn.disabled = true;
+        showSkeletons(6);
+
+        try {
+          const res = await fetch('/api/search?' + params.toString());
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text || 'Search failed');
+          }
+          const data = await res.json();
+          if (!data.ok) {
+            throw new Error(data.error || 'Search failed');
+          }
+
+          _allProviders = data.providers || [];
+          applyFilters();
+
+          const meta = data.meta || {};
+          const count = (meta.counts && meta.counts.curatedProviders) || 0;
+          setStatus(`Found ${count} space${count !== 1 ? 's' : ''}.`, false);
+        } catch (err) {
+          console.error(err);
+          setStatus(err.message || 'Something went wrong while searching.', true);
+        } finally {
+          searchBtn.disabled = false;
+        }
+      }
+
+      searchBtn.addEventListener('click', performSearch);
+
+      locationInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          performSearch();
+        }
+      });
+
+      filterName.addEventListener('input', applyFilters);
+      filterRating.addEventListener('change', applyFilters);
+
+      function applyFilters() {
+        const nameQuery = filterName.value.trim().toLowerCase();
+        const minRating = parseFloat(filterRating.value) || 0;
+
+        const filtered = _allProviders.filter((p) => {
+          const nameMatch = !nameQuery || (p.name || '').toLowerCase().includes(nameQuery);
+          const ratingMatch = !minRating || (typeof p.rating === 'number' && p.rating >= minRating);
+          return nameMatch && ratingMatch;
+        });
+
+        filterCount.textContent = filtered.length
+          ? `${filtered.length} of ${_allProviders.length}`
+          : _allProviders.length ? '0 results' : '';
+
+        _filteredProviders = filtered;
+        renderProviders(filtered);
+        if (_currentView === 'map') updateMapMarkers(filtered);
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function safeHttpsUrl(url) {
+        try {
+          const u = new URL(url);
+          return u.protocol === 'https:' ? url : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function showSkeletons(count) {
+        providersList.innerHTML = '';
+        providersList.hidden = false;
+        for (let i = 0; i < count; i++) {
+          const li = document.createElement('li');
+          li.className = 'card-skeleton';
+          li.setAttribute('aria-hidden', 'true');
+          li.innerHTML =
+            '<div class="skeleton-line skeleton-line--title"></div>' +
+            '<div class="skeleton-line skeleton-line--sub"></div>' +
+            '<div class="skeleton-line skeleton-line--text"></div>';
+          providersList.appendChild(li);
+        }
+      }
+
+      function renderProviders(providers) {
+        providersList.innerHTML = '';
+        if (!providers.length) {
+          providersList.innerHTML =
+            '<li class="empty-state">No providers found yet. Try broadening your search or switching services.</li>';
+          return;
+        }
+
+        providers.forEach((p) => {
+          const li = document.createElement('li');
+          li.className = 'card';
+
+          const services =
+            (p.services && p.services.length && p.services.join(' · ')) || '';
+          const locationLabel =
+            p.location?.address ||
+            [p.location?.city, p.location?.country].filter(Boolean).join(', ') ||
+            (p.online ? 'Online' : '');
+
+          const ratingPart =
+            typeof p.rating === 'number'
+              ? `<span class="rating">${p.rating.toFixed(1)} ★</span>`
+              : '';
+
+          const reviewPart =
+            typeof p.reviewCount === 'number'
+              ? `<span class="reviews">(${p.reviewCount.toLocaleString()})</span>`
+              : '';
+
+          const safeUrl = p.raw?.url ? safeHttpsUrl(p.raw.url) : null;
+          const mapsLink = safeUrl
+            ? `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener noreferrer" class="pill-link">View on Maps</a>`
+            : '';
+
+          li.innerHTML = `
+            <div class="card-header">
+              <h3>${escapeHtml(p.name) || 'Unknown space'}</h3>
+              <div class="card-header-right">
+                ${ratingPart}
+                ${reviewPart}
+              </div>
+            </div>
+            <div class="card-body">
+              ${locationLabel ? `<p class="location">${escapeHtml(locationLabel)}</p>` : ''}
+              ${services ? `<p class="services">Focus: <span>${escapeHtml(services)}</span></p>` : ''}
+              ${mapsLink ? `<div class="link-row">${mapsLink}</div>` : ''}
+            </div>
+          `;
+
+          providersList.appendChild(li);
+        });
+      }
+
+      // On load, silently try to detect location and pre-fill the input
+      window.addEventListener('load', () => {
+        if (!locationInput.value && navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+              const { latitude, longitude } = pos.coords;
+              try {
+                const res = await fetch(
+                  `/api/location-reverse?lat=${latitude}&lng=${longitude}`
+                );
+                const data = await res.json();
+                locationInput.value =
+                  data.label ||
+                  `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+              } catch {
+                locationInput.value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+              }
+              performSearch();
+            },
+            () => {
+              // ignore – user can search manually
+            },
+            { timeout: 10000 }
+          );
+        }
+      });
+      // --- Map view ---
+      const listViewBtn = document.getElementById('list-view-btn');
+      const mapViewBtn = document.getElementById('map-view-btn');
+      const mapEl = document.getElementById('map');
+
+      let _map = null;
+      let _markerGroup = null;
+
+      function initMap() {
+        if (_map) return;
+        _map = L.map('map', { zoomControl: true });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+        }).addTo(_map);
+        _markerGroup = L.layerGroup().addTo(_map);
+      }
+
+      function updateMapMarkers(providers) {
+        if (!_map) return;
+        _markerGroup.clearLayers();
+
+        const withCoords = providers.filter(
+          (p) => p.location?.lat != null && p.location?.lng != null
+        );
+
+        if (!withCoords.length) {
+          _map.setView([20, 0], 2);
+          return;
+        }
+
+        const bounds = [];
+        withCoords.forEach((p) => {
+          const { lat, lng } = p.location;
+          bounds.push([lat, lng]);
+
+          const safeUrl = p.raw?.url ? safeHttpsUrl(p.raw.url) : null;
+          const rating = typeof p.rating === 'number' ? p.rating.toFixed(1) + ' ★' : '';
+          const addr = p.location.address || '';
+
+          const tooltipHtml =
+            '<div class="map-tooltip">' +
+            '<strong class="map-tooltip-name">' + escapeHtml(p.name || 'Unknown space') + '</strong>' +
+            (rating ? '<span class="map-tooltip-rating">' + rating + '</span>' : '') +
+            (addr ? '<span class="map-tooltip-addr">' + escapeHtml(addr) + '</span>' : '') +
+            '</div>';
+
+          const popupHtml =
+            '<div class="map-popup">' +
+            '<strong class="map-popup-name">' + escapeHtml(p.name || 'Unknown space') + '</strong>' +
+            (rating ? '<div class="map-popup-rating">' + rating + '</div>' : '') +
+            (addr ? '<div class="map-popup-addr">' + escapeHtml(addr) + '</div>' : '') +
+            (safeUrl
+              ? '<a href="' + escapeHtml(safeUrl) + '" target="_blank" rel="noopener noreferrer" class="map-popup-link">View on Maps ↗</a>'
+              : '') +
+            '</div>';
+
+          L.circleMarker([lat, lng], {
+            radius: 9,
+            fillColor: '#c18c5b',
+            color: '#ffffff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+          })
+            .bindTooltip(tooltipHtml, {
+              className: 'map-dot-tooltip',
+              sticky: false,
+              direction: 'top',
+              offset: [0, -8],
+            })
+            .bindPopup(popupHtml, { className: 'map-dot-popup', maxWidth: 220 })
+            .addTo(_markerGroup);
+        });
+
+        _map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+      }
+
+      function setView(view) {
+        _currentView = view;
+        if (view === 'map') {
+          providersList.hidden = true;
+          mapEl.hidden = false;
+          listViewBtn.classList.remove('active');
+          listViewBtn.setAttribute('aria-pressed', 'false');
+          mapViewBtn.classList.add('active');
+          mapViewBtn.setAttribute('aria-pressed', 'true');
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              initMap();
+              _map.invalidateSize();
+              updateMapMarkers(_filteredProviders);
+            });
+          });
+        } else {
+          providersList.hidden = false;
+          mapEl.hidden = true;
+          listViewBtn.classList.add('active');
+          listViewBtn.setAttribute('aria-pressed', 'true');
+          mapViewBtn.classList.remove('active');
+          mapViewBtn.setAttribute('aria-pressed', 'false');
+        }
+      }
+
+      listViewBtn.addEventListener('click', () => setView('list'));
+      mapViewBtn.addEventListener('click', () => setView('map'));
+
+      const contactForm = document.getElementById('contact-form');
+      const contactStatus = document.getElementById('contact-status');
+      const contactSubmit = document.getElementById('contact-submit');
+
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('contact-name').value.trim();
+        const email = document.getElementById('contact-email').value.trim();
+        const message = document.getElementById('contact-message').value.trim();
+
+        if (!name || !email || !message) {
+          contactStatus.textContent = 'Please fill in all fields.';
+          contactStatus.classList.add('error');
+          return;
+        }
+
+        contactSubmit.disabled = true;
+        contactStatus.textContent = 'Sending…';
+        contactStatus.classList.remove('error');
+
+        try {
+          const res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, message }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            contactStatus.textContent = "Message sent! We'll be in touch.";
+            contactForm.reset();
+          } else {
+            throw new Error(data.error || 'Failed to send message.');
+          }
+        } catch (err) {
+          contactStatus.textContent = err.message || 'Something went wrong.';
+          contactStatus.classList.add('error');
+        } finally {
+          contactSubmit.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
+
