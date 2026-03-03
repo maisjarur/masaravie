@@ -1,6 +1,6 @@
-## Seven Entry – Holistic Wellness & Conscious Living Aggregator
+## Masaravie – Holistic Wellness & Conscious Living Aggregator
 
-Seven Entry is a minimal full-stack web app that curates **holistic wellness** and **conscious living** providers and events – think yoga, meditation, breathwork, healing, ecstatic dance, massage, sound baths, mystery schools, and self-development offerings.
+Masaravie is a minimal full-stack web app that curates **holistic wellness** and **conscious living** providers and events – think yoga, meditation, breathwork, healing, ecstatic dance, massage, sound baths, mystery schools, and self-development offerings.
 
 It acts as a neutral-toned, element-inspired **aggregator** that pulls from Google Maps and Instagram (via Apify Actors) to surface:
 
